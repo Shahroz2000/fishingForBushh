@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine? 💝</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+    color: #ff4757;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  h1 { font-family: 'Dancing Script', cursive; font-size: 2.5em; margin-bottom: 20px; }
+  h2 { margin-bottom: 20px; }
+  .cute-btn {
+    padding: 12px 25px;
+    margin: 10px;
+    font-size: 1.1em;
+    background-color: #ff6b6b;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .cute-btn:hover { background-color: #ff8787; }
+  .hidden { display: none; }
+  .floating-elements { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+  .emoji {
+    position: absolute;
+    font-size: 24px;
+    user-select: none;
+  }
+  .love-meter input[type=range] { width: 100%; }
+  .celebration-text { font-size: 1.2em; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="floating-elements" id="floating"></div>
+
+<div class="container">
+  <h1 id="valentineTitle">Bushra, my love...</h1>
+
+  <!-- Question 1 -->
+  <div class="question-section" id="q1">
+    <h2>Do you like me?</h2>
+    <button class="cute-btn" id="yes1">Yes 😍</button>
+    <button class="cute-btn" id="no1">No 🙈</button>
+    <div style="margin-top:10px;">
+      <button class="cute-btn" id="secret">💭 Secret Message</button>
+    </div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="question-section hidden" id="q2">
+    <h2>How much do you love me?</h2>
+    <input type="range" min="0" max="100" value="50" id="loveRange">
+    <p><span id="loveValue">50%</span></p>
+    <button class="cute-btn" id="next2">Next ❤️</button>
+  </div>
+
+  <!-- Question 3 -->
+  <div class="question-section hidden" id="q3">
+    <h2>Will you be my Valentine?</h2>
+    <button class="cute-btn" id="yes3">YES 💖</button>
+    <button class="cute-btn" id="no3">No 😏</button>
+  </div>
+
+  <!-- Celebration -->
+  <div class="celebration hidden" id="celebration">
+    <h2>YAY!! I'm the luckiest person ever 😭💖</h2>
+    <p class="celebration-text">Now come get your gift… a big hug 🤗 and a kiss 😚</p>
+  </div>
+</div>
+
+<script>
+// Floating emojis config
+const emojis = ['❤️','💖','💝','💗','💓','🌻','🌹','💐','🌷','🧸','🐰'];
+const floating = document.getElementById('floating');
+let screenW = window.innerWidth;
+let screenH = window.innerHeight;
+
+// Create floating emojis
+function createFloating() {
+  for(let i=0;i<40;i++){
+    const e = document.createElement('div');
+    e.className='emoji';
+    e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    resetEmoji(e);
+    floating.appendChild(e);
+  }
+}
+
+// Initialize position
+function resetEmoji(e){
+  const size = 15 + Math.random()*20;
+  e.style.fontSize = size+'px';
+  e.posX = Math.random()*screenW;
+  e.posY = Math.random()*screenH;
+  e.style.left = e.posX + 'px';
+  e.style.top = e.posY + 'px';
+  e.speed = 0.5 + Math.random()*1.5;
+  e.dir = Math.random() < 0.5 ? 1 : -1;
+  e.offset = Math.random()*50;
+  e.swayAmplitude = 30 + Math.random()*20;
+}
+
+// Animate floating emojis
+function animateEmojis(){
+  const all = document.querySelectorAll('.emoji');
+  all.forEach(e=>{
+    e.posY -= e.speed;
+    if(e.posY < -50) e.posY = screenH + Math.random()*100;
+    e.style.left = e.posX + Math.sin(Date.now()/1000 * e.speed + e.offset) * e.swayAmplitude + 'px';
+    e.style.top = e.posY + 'px';
+  });
+  requestAnimationFrame(animateEmojis);
+}
+
+createFloating();
+animateEmojis();
+
+// Handle window resize
+window.addEventListener('resize', ()=>{ screenW = window.innerWidth; screenH = window.innerHeight; });
+
+// Button logic
+let no1Clicks=0;
+const yes1=document.getElementById('yes1');
+const no1=document.getElementById('no1');
+const secret=document.getElementById('secret');
+
+yes1.onclick = ()=>{ document.getElementById('q1').classList.add('hidden'); document.getElementById('q2').classList.remove('hidden'); };
+no1.onclick = ()=>{
+  no1Clicks++;
+  if(no1Clicks===1){ no1.textContent="Are you sure? 😏"; moveButton(no1);}
+  else{ moveButton(no1); yes1.style.transform='scale(1.5)'; yes1.style.boxShadow='0 0 25px rgba(255,0,100,0.6)'; yes1.textContent="YES 💖"; }
+};
+no1.onmouseenter = () => moveButton(no1);
+
+const no3 = document.getElementById('no3');
+no3.onclick = ()=> moveButton(no3);
+no3.onmouseenter = ()=> moveButton(no3);
+
+secret.onclick = ()=>{ alert("I don't like you… I LOVE YOU ❤️🥰"); };
+
+const loveRange=document.getElementById('loveRange');
+const loveValue=document.getElementById('loveValue');
+loveRange.oninput = ()=>{ loveValue.textContent = loveRange.value+'%'; };
+
+document.getElementById('next2').onclick = ()=>{
+  document.getElementById('q2').classList.add('hidden'); 
+  document.getElementById('q3').classList.remove('hidden');
+};
+
+const yes3 = document.getElementById('yes3');
+yes3.onclick = ()=>{ 
+  document.getElementById('q3').classList.add('hidden'); 
+  document.getElementById('celebration').classList.remove('hidden'); 
+  explodeEmojis();
+};
+
+// Move buttons randomly
+function moveButton(btn){
+  const x = Math.random()*(window.innerWidth - btn.offsetWidth -20);
+  const y = Math.random()*(window.innerHeight - btn.offsetHeight -20);
+  btn.style.position='fixed';
+  btn.style.left=x+'px';
+  btn.style.top=y+'px';
+}
+
+// Explosion effect for celebration
+function explodeEmojis(){
+  for(let i=0;i<50;i++){
+    const e = document.createElement('div');
+    e.className='emoji';
+    e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    resetEmoji(e);
+    floating.appendChild(e);
+  }
+}
+</script>
+</body>
+</html>
